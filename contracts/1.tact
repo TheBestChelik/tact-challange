@@ -22,6 +22,7 @@ contract Task1 with Deployable {
 
     init() {
       self.counter = 0;
+      
     }
 
     receive(msg: Add) {
