@@ -35,7 +35,7 @@ contract Task2 with Deployable {
 
   receive(msg: Slice) {
     let realInValue: Int = context().value;
-    bodyCell = beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell();
+    let bodyCell: Cell = beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell();
     send(SendParameters{
             to: self.admin,
             value: realInValue,
