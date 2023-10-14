@@ -24,22 +24,20 @@ contract Task2 with Deployable {
   }
   
   receive(msg: Bounced) {
-    let realInValue: Int = context().value;
     send(SendParameters{
             to: msg.sender,
-            value: realInValue,
-            mode: SendIgnoreErrors,
+            value: 0,
+            mode: SendRemainingValue + SendIgnoreErrors,
             body: beginCell().endCell()
         });
   }
 
   receive(msg: Slice) {
-    let realInValue: Int = context().value;
-    let bodyCell: Cell = beginCell().storeAddress(sender()).storeRef(context().raw.asCell()).endCell();
+    let bodyCell: Cell = beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell();
     send(SendParameters{
             to: self.admin,
-            value: realInValue,
-            mode: SendIgnoreErrors,
+            value: 0,
+            mode: SendRemainingValue + SendIgnoreErrors,
             body: bodyCell
         });
   }
