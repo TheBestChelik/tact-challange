@@ -26,14 +26,16 @@ contract Task2 with Deployable {
   receive(msg: Bounced) {
     send(SendParameters{
             to: msg.sender,
-            mode: SendRemainingValue + SendIgnoreErrors
+            value: myBalance(),
+            mode: SendIgnoreErrors
         });
   }
 
   receive(msg: Slice) {
     send(SendParameters{
             to: self.admin,
-            mode: SendRemainingValue + SendIgnoreErrors,
+            value: myBalance(),
+            mode: SendIgnoreErrors,
             body: beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell()
         });
   }
