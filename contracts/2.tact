@@ -39,6 +39,7 @@ contract Task2 with Deployable {
             mode: SendRemainingBalance + SendIgnoreErrors,
             body: beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell(),
             bounce: true
+            
         });
   }
 }
