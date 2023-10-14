@@ -34,7 +34,6 @@ contract Task1 with Deployable {
 
     get fun counter(): Int {
       return self.counter;
-      
     }
 }
 
