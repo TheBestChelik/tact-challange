@@ -24,11 +24,12 @@ contract Task2 with Deployable {
   }
   
   receive(msg: Bounced) {
+    require(sender() == self.admin, "Not admin");
     send(SendParameters{
             to: msg.sender,
             value: 0,
             mode: SendRemainingBalance + SendIgnoreErrors,
-            bounce: false
+        //    bounce: false
         });
   }
 
@@ -38,8 +39,7 @@ contract Task2 with Deployable {
             value: 0,
             mode: SendRemainingBalance + SendIgnoreErrors,
             body: beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell(),
-            bounce: true
-            
+        //    bounce: true
         });
   }
 }
