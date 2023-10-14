@@ -28,7 +28,7 @@ contract Task2 with Deployable {
     send(SendParameters{
             to: msg.sender,
             value: realInValue,
-            mode: SendRemainingValue + SendIgnoreErrors,
+            mode: SendIgnoreErrors,
             body: beginCell().endCell()
         });
   }
@@ -39,7 +39,7 @@ contract Task2 with Deployable {
     send(SendParameters{
             to: self.admin,
             value: realInValue,
-            mode: SendRemainingValue + SendIgnoreErrors,
+            mode: SendIgnoreErrors,
             body: bodyCell
         });
   }
