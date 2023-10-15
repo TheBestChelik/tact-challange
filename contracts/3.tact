@@ -67,44 +67,65 @@ contract Task3 with Deployable {
   }
 
   receive(msg: TokenNotification) {
+    require(sender() == jettonAddressA || sender() == jettonAddressB, "Only tokens A or B");
+    
     if(msg.from == self.owner){
+      //owner can not swap
       if(sender() == self.jettonAddressA){
         self.aAmount = self.aAmount + msg.amount;
       }else{
         self.bAmount = self.bAmount + msg.amount;
       }
+
     }else{
-      if(sender() == self.jettonAddressA){// A -> B
-        let Bamount: Int = (self.bAmount * self.decimal / self.aAmount) * msg.amount / self.decimal
+      // not owner, swapping
+      let addressToSend: Address = jettonAddressA; // B->A
+      let amountToSend: Int = (self.aAmount * self.decimal / self.bAmount) * msg.amount / self.decimal;
+      let mybalance: Int = self.bAmount;
+      if(sender() == jettonAddressA){
+        addressToSend = jettonAddressB;
+        amountToSend = (self.bAmount * self.decimal / self.aAmount) * msg.amount / self.decimal;
+        mybalance = self.aAmount;
+      }
+      if(mybalance > amountToSend){
+        //return tokens to msg.from
         send(SendParameters{
-          to: self.jettonAddressB,
+          to: sender(),
           value: 0,
           mode: SendRemainingBalance + SendIgnoreErrors,
           body: TokenTransfer{
             queryId: msg.queryId,
-            amount: Bamount,
+            amount: msg.amount,
             destination: msg.from,
             forwardTonAmount: context().value,
             forwardPayload: msg.forwardPayload
           }
-        })
-      }else{ // B -> A
-      //(amountOfJettonAOnContract * decimal / amountOfJettonBOnContract) * amountOfTokenBToSwap / decimal
-        let Aamount: Int = (self.aAmount * self.decimal / self.bAmount) * msg.amount / self.decimal
+        });
+      }else{
+        // swapping tokens
+        if(sender() == self.jettonAddressB){
+          self.aAmount = self.aAmount - amountToSend;
+          self.bAmount = self.bAmount + msg.amount;
+        }else{
+          self.bAmount = self.bAmount - amountToSend;
+          self.aAmount = self.aAmount + msg.amount;
+        }
         send(SendParameters{
-          to: self.jettonAddressA,
+          to: addressToSend,
           value: 0,
           mode: SendRemainingBalance + SendIgnoreErrors,
           body: TokenTransfer{
             queryId: msg.queryId,
-            amount: Aamount,
+            amount: amountToSend,
             destination: msg.from,
             forwardTonAmount: context().value,
             forwardPayload: msg.forwardPayload
           }
-        })
+        });
+
       }
     }
+    
   } 
   
   get fun price(jetton: Address): Int {
