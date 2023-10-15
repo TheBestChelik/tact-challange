@@ -11,7 +11,7 @@ import "@stdlib/deploy";
   Decimals are only needed for price accuracy. It should be set as 1e9.
   So, if smart contract has 10 of jetton A and 2 of jetton B, then after sending 1 jetton B you should receive 5 of jettons A.
 
-  Example formula for amountOfBJettonToSend in B->A swap will be
+  Example formula for amountOfAJettonToSend in B->A swap will be
   (amountOfJettonAOnContract * decimal / amountOfJettonBOnContract) * amountOfTokenBToSwap / decimal
 
   If smart contract pool doesn't have enough jettons to trade,
@@ -34,19 +34,19 @@ import "@stdlib/deploy";
 
 message(0x7362d09c) TokenNotification {
     queryId: Int as uint64;
-    amount: Int as coins;
-    from: Address;
+    amount: Int as coins; //amount of tokens
+    from: Address; // ton wallet
     forwardPayload: Slice as remaining;
 }
 
 message(0xf8a7ea5) TokenTransfer {
     queryId: Int as uint64;
-    amount: Int as coins;
-    destination: Address;
+    amount: Int as coins; //calculated amount
+    destination: Address; // ton wallet
     responseDestination: Address?;
     customPayload: Cell?;
-    forwardTonAmount: Int as coins;
-    forwardPayload: Slice as remaining;
+    forwardTonAmount: Int as coins; //context().value??
+    forwardPayload: Slice as remaining; //forward peyload from tokenNotification
 }
 
 contract Task3 with Deployable {
@@ -67,11 +67,42 @@ contract Task3 with Deployable {
   }
 
   receive(msg: TokenNotification) {
-    if(sender() == self.owner){
-      if(msg.from == self.jettonAddressA){
+    if(msg.from == self.owner){
+      if(sender() == self.jettonAddressA){
         self.aAmount = self.aAmount + msg.amount;
       }else{
         self.bAmount = self.bAmount + msg.amount;
+      }
+    }else{
+      if(sender() == self.jettonAddressA){// A -> B
+        let Bamount: Int = (self.bAmount * self.decimal / self.aAmount) * msg.amount / self.decimal
+        send(SendParameters{
+          to: self.jettonAddressB,
+          value: 0,
+          mode: SendRemainingBalance + SendIgnoreErrors,
+          body: TokenTransfer{
+            queryId: msg.queryId,
+            amount: Bamount,
+            destination: msg.from,
+            forwardTonAmount: context().value,
+            forwardPayload: msg.forwardPayload
+          }
+        })
+      }else{ // B -> A
+      //(amountOfJettonAOnContract * decimal / amountOfJettonBOnContract) * amountOfTokenBToSwap / decimal
+        let Aamount: Int = (self.aAmount * self.decimal / self.bAmount) * msg.amount / self.decimal
+        send(SendParameters{
+          to: self.jettonAddressA,
+          value: 0,
+          mode: SendRemainingBalance + SendIgnoreErrors,
+          body: TokenTransfer{
+            queryId: msg.queryId,
+            amount: Aamount,
+            destination: msg.from,
+            forwardTonAmount: context().value,
+            forwardPayload: msg.forwardPayload
+          }
+        })
       }
     }
   } 
