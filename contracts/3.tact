@@ -67,11 +67,11 @@ contract Task3 with Deployable {
   }
 
   receive(msg: TokenNotification) {
-    require(msg.from == self.jettonAddressA || msg.from == self.jettonAddressB, "Invalid jetton");
+    require(sender() == self.jettonAddressA || sender() == self.jettonAddressB, "Invalid jetton");
     
-    if(sender() == self.owner){
+    if(msg.from == self.owner){
       //owner can not swap
-      if(msg.from == self.jettonAddressA){
+      if(sender() == self.jettonAddressA){
         self.aAmount = self.aAmount + msg.amount;
       }else{
         self.bAmount = self.bAmount + msg.amount;
@@ -82,21 +82,21 @@ contract Task3 with Deployable {
       let addressToSend: Address = self.jettonAddressA; // B->A
       let amountToSend: Int = (self.aAmount * self.decimal / self.bAmount) * msg.amount / self.decimal;
       let mybalance: Int = self.bAmount;
-      if(msg.from == self.jettonAddressA){
+      if(sender() == self.jettonAddressA){
         addressToSend = self.jettonAddressB;
         amountToSend = (self.bAmount * self.decimal / self.aAmount) * msg.amount / self.decimal;
         mybalance = self.aAmount;
       }
       if(mybalance > amountToSend){
-        //return tokens to sender()
+        //return tokens to msg.from
         send(SendParameters{
-          to: msg.from,
+          to: sender(),
           value: 0,
           mode: SendRemainingBalance + SendIgnoreErrors,
           body: TokenTransfer{
             queryId: msg.queryId,
             amount: msg.amount,
-            destination: sender(),
+            destination: msg.from,
             responseDestination: myAddress(),
             customPayload: beginCell().endCell(),
             forwardTonAmount: context().value,
@@ -105,7 +105,7 @@ contract Task3 with Deployable {
         });
       }else{
         // swapping tokens
-        if(msg.from == self.jettonAddressB){
+        if(sender() == self.jettonAddressB){
           self.aAmount = self.aAmount - amountToSend;
           self.bAmount = self.bAmount + msg.amount;
         }else{
@@ -119,7 +119,7 @@ contract Task3 with Deployable {
           body: TokenTransfer{
             queryId: msg.queryId,
             amount: amountToSend,
-            destination: sender(),
+            destination: msg.from,
             responseDestination: myAddress(),
             customPayload: beginCell().endCell(),
             forwardTonAmount: context().value,
