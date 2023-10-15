@@ -32,7 +32,7 @@ import "@stdlib/deploy";
   To be exact: any jettons (A or B) received from the admin are "added". Admin can't swap.
 */
 
-message(0x7362d09c) TokenNotification {
+message(0x7362d09c) TokenNotification{
     queryId: Int as uint64;
     amount: Int as coins; //amount of tokens
     from: Address; // ton wallet
@@ -67,7 +67,7 @@ contract Task3 with Deployable {
   }
 
   receive(msg: TokenNotification) {
-    require(sender() == jettonAddressA || sender() == jettonAddressB, "Only tokens A or B");
+    require(sender() == self.jettonAddressA || sender() == self.jettonAddressB, "Invalid jetton");
     
     if(msg.from == self.owner){
       //owner can not swap
@@ -79,11 +79,11 @@ contract Task3 with Deployable {
 
     }else{
       // not owner, swapping
-      let addressToSend: Address = jettonAddressA; // B->A
+      let addressToSend: Address = self.jettonAddressA; // B->A
       let amountToSend: Int = (self.aAmount * self.decimal / self.bAmount) * msg.amount / self.decimal;
       let mybalance: Int = self.bAmount;
-      if(sender() == jettonAddressA){
-        addressToSend = jettonAddressB;
+      if(sender() == self.jettonAddressA){
+        addressToSend = self.jettonAddressB;
         amountToSend = (self.bAmount * self.decimal / self.aAmount) * msg.amount / self.decimal;
         mybalance = self.aAmount;
       }
@@ -97,9 +97,11 @@ contract Task3 with Deployable {
             queryId: msg.queryId,
             amount: msg.amount,
             destination: msg.from,
+            responseDestination: myAddress(),
+            customPayload: beginCell().endCell(),
             forwardTonAmount: context().value,
             forwardPayload: msg.forwardPayload
-          }
+          }.toCell()
         });
       }else{
         // swapping tokens
@@ -118,9 +120,11 @@ contract Task3 with Deployable {
             queryId: msg.queryId,
             amount: amountToSend,
             destination: msg.from,
+            responseDestination: myAddress(),
+            customPayload: beginCell().endCell(),
             forwardTonAmount: context().value,
             forwardPayload: msg.forwardPayload
-          }
+          }.toCell()
         });
 
       }
@@ -129,6 +133,7 @@ contract Task3 with Deployable {
   } 
   
   get fun price(jetton: Address): Int {
+    require(jetton == self.jettonAddressA || jetton == self.jettonAddressB, "Invalid jetton");
     if(jetton == self.jettonAddressA){
       return self.aAmount * self.decimal / self.bAmount;
     }
@@ -136,6 +141,7 @@ contract Task3 with Deployable {
   }
   
   get fun balance(jetton: Address): Int { 
+    require(jetton == self.jettonAddressA || jetton == self.jettonAddressB, "Invalid jetton");
     if(jetton == self.jettonAddressA){
       return self.aAmount;
     }
