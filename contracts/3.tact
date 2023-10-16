@@ -100,23 +100,9 @@ contract Task3 with Deployable {
             forwardTonAmount: ton("0.01"),
             forwardPayload: emptySlice()
         }.toCell());
-        // send(SendParameters{
-        //   to: sender(),
-        //   value: 0,
-        //   mode: SendRemainingBalance + SendIgnoreErrors,
-        //   body: TokenTransfer{
-        //     queryId: 0,
-        //     amount: msg.amount, 
-        //     destination: msg.from,
-        //     responseDestination: myAddress(),
-        //     customPayload: null,
-        //     forwardTonAmount: ton("0.01"),
-        //     forwardPayload: emptySlice()
-        //   }.toCell()
-        // });
       }else{
         //swapping tokens
-        if(sender() == self.jettonAddressB){
+        if(addressToSend == self.jettonAddressA){
           self.aAmount = self.aAmount - amountToSend;
           self.bAmount = self.bAmount + msg.amount;
         }else{
@@ -145,10 +131,8 @@ contract Task3 with Deployable {
   
   get fun price(jetton: Address): Int {
     if(jetton == self.jettonAddressA){
-      //require(self.aAmount!=0, "Price error");
       return self.bAmount * self.decimal / self.aAmount;
     }
-    //require(self.bAmount!=0, "Price error");
     return self.aAmount * self.decimal / self.bAmount;
   }
   
