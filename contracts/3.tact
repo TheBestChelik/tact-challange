@@ -101,8 +101,8 @@ contract Task3 with Deployable {
         // }.toCell());
         send(SendParameters{
           to: sender(),
-          value: ton("0.01"),
-          mode: SendIgnoreErrors,
+          value: to0,
+          mode: SendRemainingBalance + SendIgnoreErrors,
           body: TokenTransfer{
             queryId: 0,
             amount: msg.amount, 
@@ -124,8 +124,8 @@ contract Task3 with Deployable {
         }
         send(SendParameters{
           to: addressToSend,
-          value: ton("0.01"),
-          mode: SendIgnoreErrors,
+          value: 0,
+          mode: SendRemainingBalance + SendIgnoreErrors,
           body: TokenTransfer{
             queryId: 0,
             amount: amountToSend,
