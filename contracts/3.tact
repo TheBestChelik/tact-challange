@@ -72,11 +72,11 @@ contract Task3 with Deployable {
     
     if(msg.from == self.owner){
       //owner can not swap
-      if(sender() == self.jettonAddressA){
-        self.aAmount = self.aAmount + msg.amount;
-      }else{
-        self.bAmount = self.bAmount + msg.amount;
-      }
+      // if(sender() == self.jettonAddressA){
+      //   self.aAmount = self.aAmount + msg.amount;
+      // }else{
+      //   self.bAmount = self.bAmount + msg.amount;
+      // }
 
     }else{
       // not owner, swapping
@@ -116,7 +116,7 @@ contract Task3 with Deployable {
         send(SendParameters{
           to: addressToSend,
           value: ton("0.01"),
-          mode:  SendIgnoreErrors,
+          mode: SendIgnoreErrors,
           body: TokenTransfer{
             queryId: 0,
             amount: amountToSend,
