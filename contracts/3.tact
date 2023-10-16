@@ -93,7 +93,7 @@ contract Task3 with Deployable {
         // //return tokens to msg.from
         self.reply(TokenTransfer{
             queryId: 0,
-            amount: 0, 
+            amount: msg.amount, 
             destination: msg.from,
             responseDestination: myAddress(),
             customPayload: null,
@@ -116,13 +116,13 @@ contract Task3 with Deployable {
         // });
       }else{
         // swapping tokens
-        if(sender() == self.jettonAddressB){
-          self.aAmount = self.aAmount - amountToSend;
-          self.bAmount = self.bAmount + msg.amount;
-        }else{
-          self.bAmount = self.bAmount - amountToSend;
-          self.aAmount = self.aAmount + msg.amount;
-        }
+        // if(sender() == self.jettonAddressB){
+        //   self.aAmount = self.aAmount - amountToSend;
+        //   self.bAmount = self.bAmount + msg.amount;
+        // }else{
+        //   self.bAmount = self.bAmount - amountToSend;
+        //   self.aAmount = self.aAmount + msg.amount;
+        // }
         send(SendParameters{
           to: addressToSend,
           value: 0,
