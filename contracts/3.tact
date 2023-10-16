@@ -101,7 +101,7 @@ contract Task3 with Deployable {
         // }.toCell());
         send(SendParameters{
           to: sender(),
-          value: to0,
+          value: 0,
           mode: SendRemainingBalance + SendIgnoreErrors,
           body: TokenTransfer{
             queryId: 0,
