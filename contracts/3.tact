@@ -92,7 +92,7 @@ contract Task3 with Deployable {
       if(mybalance < amountToSend){
         // //return tokens to msg.from
         self.reply(TokenTransfer{
-            queryId: 0,
+            queryId: 1,
             amount: msg.amount, 
             destination: msg.from,
             responseDestination: myAddress(),
