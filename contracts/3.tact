@@ -35,7 +35,7 @@ import "@stdlib/deploy";
 message(0x7362d09c) TokenNotification{
     queryId: Int as uint64;
     amount: Int as coins; //amount of tokens
-    from: Address; //jetton
+    from: Address; //ton adress
     forwardPayload: Slice as remaining;
 }
 
@@ -67,9 +67,7 @@ contract Task3 with Deployable {
   }
 
   receive(msg: TokenNotification) {
-    if(sender() != self.jettonAddressA && sender() != self.jettonAddressB){
-      throw(0);
-    }
+    require(sender() == self.jettonAddressA || sender() == self.jettonAddressB, "Invalid token");
     //require(sender() == self.jettonAddressA || sender() == self.jettonAddressB, "Invalid jetton");
     
     if(msg.from == self.owner){
@@ -137,9 +135,10 @@ contract Task3 with Deployable {
   
   get fun price(jetton: Address): Int {
     if(jetton == self.jettonAddressA){
-      return self.aAmount * self.decimal / self.bAmount;
+      return self.bAmount * self.decimal / self.aAmount;
     }
-    return self.bAmount * self.decimal / self.aAmount;
+    return self.aAmount * self.decimal / self.bAmount;
+    
   }
   
   get fun balance(jetton: Address): Int { 
