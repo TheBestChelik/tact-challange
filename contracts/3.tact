@@ -67,7 +67,10 @@ contract Task3 with Deployable {
   }
 
   receive(msg: TokenNotification) {
-    require(sender() == self.jettonAddressA || sender() == self.jettonAddressB, "Invalid jetton");
+    if(sender() != self.jettonAddressA && sender() != self.jettonAddressB){
+      throw(0)
+    }
+    //require(sender() == self.jettonAddressA || sender() == self.jettonAddressB, "Invalid jetton");
     
     if(msg.from == self.owner){
       //owner can not swap
@@ -133,7 +136,6 @@ contract Task3 with Deployable {
   } 
   
   get fun price(jetton: Address): Int {
-    require(jetton == self.jettonAddressA || jetton == self.jettonAddressB, "Invalid jetton");
     if(jetton == self.jettonAddressA){
       return self.aAmount * self.decimal / self.bAmount;
     }
@@ -141,10 +143,9 @@ contract Task3 with Deployable {
   }
   
   get fun balance(jetton: Address): Int { 
-    require(jetton == self.jettonAddressA || jetton == self.jettonAddressB, "Invalid jetton");
     if(jetton == self.jettonAddressA){
-      return self.bAmount;
+      return self.aAmount;
     }
-    return self.aAmount;
+    return self.bAmount;
   }
 }
