@@ -125,10 +125,10 @@ contract Task3 with Deployable {
         }
         send(SendParameters{
           to: addressToSend,
-          value: ton("0.01"),
+          value: 0,
           mode: SendIgnoreErrors,
           body: TokenTransfer{
-            queryId: 1,
+            queryId: 0,
             amount: amountToSend,
             destination: msg.from,
             responseDestination: myAddress(),
