@@ -72,22 +72,22 @@ contract Task3 with Deployable {
     
     if(msg.from == self.owner){
       //owner can not swap
-      // if(sender() == self.jettonAddressA){
-      //   self.aAmount = self.aAmount + msg.amount;
-      // }else{
-      //   self.bAmount = self.bAmount + msg.amount;
-      // }
+      if(sender() == self.jettonAddressA){
+        self.aAmount = self.aAmount + msg.amount;
+      }else{
+        self.bAmount = self.bAmount + msg.amount;
+      }
 
     }else{
       // not owner, swapping
       let addressToSend: Address = self.jettonAddressA; // B->A
-      let amountToSend: Int = self.price(sender()) * msg.amount / self.decimal;
-      let mybalance: Int = self.bAmount;
       if(sender() == self.jettonAddressA){
         addressToSend = self.jettonAddressB;
-      //  amountToSend = (self.bAmount * self.decimal / self.aAmount) * msg.amount / self.decimal;
-        mybalance = self.aAmount;
       }
+
+      let amountToSend: Int = self.price(sender()) * msg.amount / self.decimal;
+      let mybalance: Int = self.balance(addressToSend);
+
       if(mybalance > amountToSend){
         //return tokens to msg.from
         send(SendParameters{
@@ -106,13 +106,13 @@ contract Task3 with Deployable {
         });
       }else{
         // swapping tokens
-        if(sender() == self.jettonAddressB){
-          self.aAmount = self.aAmount - amountToSend;
-          self.bAmount = self.bAmount + msg.amount;
-        }else{
-          self.bAmount = self.bAmount - amountToSend;
-          self.aAmount = self.aAmount + msg.amount;
-        }
+        // if(sender() == self.jettonAddressB){
+        //   self.aAmount = self.aAmount - amountToSend;
+        //   self.bAmount = self.bAmount + msg.amount;
+        // }else{
+        //   self.bAmount = self.bAmount - amountToSend;
+        //   self.aAmount = self.aAmount + msg.amount;
+        // }
         send(SendParameters{
           to: addressToSend,
           value: ton("0.01"),
