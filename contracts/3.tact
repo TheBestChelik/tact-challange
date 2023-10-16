@@ -81,15 +81,14 @@ contract Task3 with Deployable {
     }else{
       // not owner, swapping
       let addressToSend: Address = self.jettonAddressA; // B->A
-      
-      
+      let amountToSend: Int = (self.aAmount * self.decimal / self.bAmount) * msg.amount / self.decimal;
+      let mybalance: Int = self.aAmount;
       if(sender() == self.jettonAddressA){
         addressToSend = self.jettonAddressB;
-      //  amountToSend = (self.bAmount * self.decimal / self.aAmount) * msg.amount / self.decimal;
-      //  mybalance = self.bAmount;
+        amountToSend = (self.bAmount * self.decimal / self.aAmount) * msg.amount / self.decimal;
+        mybalance = self.bAmount;
       }
-      let mybalance: Int = self.balance(addressToSend);
-      let amountToSend: Int = self.price(sender()) * msg.amount / self.decimal;
+
       if(mybalance < amountToSend){
         // //return tokens to msg.from
         self.reply(TokenTransfer{
@@ -101,9 +100,23 @@ contract Task3 with Deployable {
             forwardTonAmount: ton("0.01"),
             forwardPayload: emptySlice()
         }.toCell());
+        // send(SendParameters{
+        //   to: sender(),
+        //   value: 0,
+        //   mode: SendRemainingBalance + SendIgnoreErrors,
+        //   body: TokenTransfer{
+        //     queryId: 0,
+        //     amount: msg.amount, 
+        //     destination: msg.from,
+        //     responseDestination: myAddress(),
+        //     customPayload: null,
+        //     forwardTonAmount: ton("0.01"),
+        //     forwardPayload: emptySlice()
+        //   }.toCell()
+        // });
       }else{
         //swapping tokens
-        if(addressToSend == self.jettonAddressA){
+        if(sender() == self.jettonAddressB){
           self.aAmount = self.aAmount - amountToSend;
           self.bAmount = self.bAmount + msg.amount;
         }else{
@@ -132,8 +145,10 @@ contract Task3 with Deployable {
   
   get fun price(jetton: Address): Int {
     if(jetton == self.jettonAddressA){
+      //require(self.aAmount!=0, "Price error");
       return self.bAmount * self.decimal / self.aAmount;
     }
+    //require(self.bAmount!=0, "Price error");
     return self.aAmount * self.decimal / self.bAmount;
   }
   
