@@ -115,18 +115,18 @@ contract Task3 with Deployable {
         //   }.toCell()
         // });
       }else{
-        // swapping tokens
-        // if(sender() == self.jettonAddressB){
-        //   self.aAmount = self.aAmount - amountToSend;
-        //   self.bAmount = self.bAmount + msg.amount;
-        // }else{
-        //   self.bAmount = self.bAmount - amountToSend;
-        //   self.aAmount = self.aAmount + msg.amount;
-        // }
+        //swapping tokens
+        if(sender() == self.jettonAddressB){
+          self.aAmount = self.aAmount - amountToSend;
+          self.bAmount = self.bAmount + msg.amount;
+        }else{
+          self.bAmount = self.bAmount - amountToSend;
+          self.aAmount = self.aAmount + msg.amount;
+        }
         send(SendParameters{
           to: addressToSend,
           value: 0,
-          mode: SendRemainingBalance + SendIgnoreErrors,
+          mode: SendRemainingValue + SendIgnoreErrors,
           body: TokenTransfer{
             queryId: 0,
             amount: amountToSend,
