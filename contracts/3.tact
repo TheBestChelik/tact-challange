@@ -35,14 +35,14 @@ import "@stdlib/deploy";
 message(0x7362d09c) TokenNotification{
     queryId: Int as uint64;
     amount: Int as coins; //amount of tokens
-    from: Address; // ton wallet
+    from: Address; //jetton
     forwardPayload: Slice as remaining;
 }
 
 message(0xf8a7ea5) TokenTransfer {
     queryId: Int as uint64;
     amount: Int as coins; //calculated amount
-    destination: Address; // ton wallet
+    destination: Address; 
     responseDestination: Address?;
     customPayload: Cell?;
     forwardTonAmount: Int as coins; //context().value??
@@ -95,10 +95,10 @@ contract Task3 with Deployable {
           mode: SendRemainingBalance + SendIgnoreErrors,
           body: TokenTransfer{
             queryId: msg.queryId,
-            amount: msg.amount,
+            amount: msg.amount, 
             destination: msg.from,
-            responseDestination: myAddress(),
-            customPayload: beginCell().endCell(),
+            responseDestination: msg.from,
+            customPayload: null,
             forwardTonAmount: context().value,
             forwardPayload: msg.forwardPayload
           }.toCell()
@@ -120,8 +120,8 @@ contract Task3 with Deployable {
             queryId: msg.queryId,
             amount: amountToSend,
             destination: msg.from,
-            responseDestination: myAddress(),
-            customPayload: beginCell().endCell(),
+            responseDestination: msg.from,
+            customPayload: null,
             forwardTonAmount: context().value,
             forwardPayload: msg.forwardPayload
           }.toCell()
