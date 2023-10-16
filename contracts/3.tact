@@ -90,20 +90,7 @@ contract Task3 with Deployable {
 
       if(mybalance > amountToSend){
         //return tokens to msg.from
-        self.reply(TokenTransfer{
-            queryId: 0,
-            amount: msg.amount, 
-            destination: msg.from,
-            responseDestination: myAddress(),
-            customPayload: null,
-            forwardTonAmount: ton("0.01"),
-            forwardPayload: emptySlice()
-        }.toCell());
-        // send(SendParameters{
-        //   to: sender(),
-        //   value: ton("0.01"),
-        //   mode: SendIgnoreErrors,
-        //   body: TokenTransfer{
+        // self.reply(TokenTransfer{
         //     queryId: 0,
         //     amount: msg.amount, 
         //     destination: msg.from,
@@ -111,8 +98,21 @@ contract Task3 with Deployable {
         //     customPayload: null,
         //     forwardTonAmount: ton("0.01"),
         //     forwardPayload: emptySlice()
-        //   }.toCell()
-        // });
+        // }.toCell());
+        send(SendParameters{
+          to: sender(),
+          value: ton("0.01"),
+          mode: SendIgnoreErrors,
+          body: TokenTransfer{
+            queryId: 0,
+            amount: msg.amount, 
+            destination: msg.from,
+            responseDestination: myAddress(),
+            customPayload: null,
+            forwardTonAmount: ton("0.01"),
+            forwardPayload: emptySlice()
+          }.toCell()
+        });
       }else{
         // swapping tokens
         if(sender() == self.jettonAddressB){
