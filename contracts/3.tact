@@ -80,11 +80,11 @@ contract Task3 with Deployable {
 
     }else{
       // not owner, swapping
-      let addressToSend: Address = self.jettonAddressA; // B->A
+      let addressToSend: Address = self.jettonAddressB; // B->A
       let amountToSend: Int = (self.aAmount * self.decimal / self.bAmount) * msg.amount / self.decimal;
       let mybalance: Int = self.bAmount;
       if(sender() == self.jettonAddressA){
-        addressToSend = self.jettonAddressB;
+        addressToSend = self.jettonAddressA;
         amountToSend = (self.bAmount * self.decimal / self.aAmount) * msg.amount / self.decimal;
         mybalance = self.aAmount;
       }
@@ -126,7 +126,7 @@ contract Task3 with Deployable {
         send(SendParameters{
           to: addressToSend,
           value: 0,
-          mode: SendIgnoreErrors,
+          mode: SendRemainingValue + SendIgnoreErrors,
           body: TokenTransfer{
             queryId: 0,
             amount: amountToSend,
@@ -148,7 +148,6 @@ contract Task3 with Deployable {
       return self.bAmount * self.decimal / self.aAmount;
     }
     return self.aAmount * self.decimal / self.bAmount;
-    
   }
   
   get fun balance(jetton: Address): Int { 
