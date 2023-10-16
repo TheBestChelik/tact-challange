@@ -40,13 +40,13 @@ message(0x7362d09c) TokenNotification{
 }
 
 message(0xf8a7ea5) TokenTransfer {
-    queryId: Int as uint64;
-    amount: Int as coins; //calculated amount
-    destination: Address; 
-    responseDestination: Address?;
-    customPayload: Cell?;
-    forwardTonAmount: Int as coins; //context().value??
-    forwardPayload: Slice as remaining; //forward peyload from tokenNotification
+     queryId: Int as uint64; // should be 0
+     amount: Int as coins; // should be amount of jettons to send
+     destination: Address; // should be user address / TokenNotification.from
+     responseDestination: Address?; // should be myAddress()
+     customPayload: Cell?; // should be null
+     forwardTonAmount: Int as coins; // should be ton("0.01")
+     forwardPayload: Slice as remaining; // should be emptySlice()
 }
 
 contract Task3 with Deployable {
@@ -94,13 +94,13 @@ contract Task3 with Deployable {
           value: 0,
           mode: SendRemainingBalance + SendIgnoreErrors,
           body: TokenTransfer{
-            queryId: msg.queryId,
+            queryId: 0,
             amount: msg.amount, 
             destination: msg.from,
-            responseDestination: msg.from,
+            responseDestination: myAddress(),
             customPayload: null,
-            forwardTonAmount: context().value,
-            forwardPayload: msg.forwardPayload
+            forwardTonAmount: ton("0.01"),
+            forwardPayload: emptySlice()
           }.toCell()
         });
       }else{
@@ -117,13 +117,13 @@ contract Task3 with Deployable {
           value: 0,
           mode: SendRemainingBalance + SendIgnoreErrors,
           body: TokenTransfer{
-            queryId: msg.queryId,
+            queryId: 0,
             amount: amountToSend,
             destination: msg.from,
-            responseDestination: msg.from,
+            responseDestination: myAddress(),
             customPayload: null,
-            forwardTonAmount: context().value,
-            forwardPayload: msg.forwardPayload
+            forwardTonAmount: ton("0.01"),
+            forwardPayload: emptySlice()
           }.toCell()
         });
 
