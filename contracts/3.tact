@@ -68,7 +68,7 @@ contract Task3 with Deployable {
 
   receive(msg: TokenNotification) {
     if(sender() != self.jettonAddressA && sender() != self.jettonAddressB){
-      throw(0)
+      throw(0);
     }
     //require(sender() == self.jettonAddressA || sender() == self.jettonAddressB, "Invalid jetton");
     
