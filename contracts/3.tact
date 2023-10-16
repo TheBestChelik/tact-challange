@@ -143,8 +143,8 @@ contract Task3 with Deployable {
   get fun balance(jetton: Address): Int { 
     require(jetton == self.jettonAddressA || jetton == self.jettonAddressB, "Invalid jetton");
     if(jetton == self.jettonAddressA){
-      return self.aAmount;
+      return self.bAmount;
     }
-    return self.bAmount;
+    return self.aAmount;
   }
 }
