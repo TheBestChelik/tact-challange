@@ -86,19 +86,19 @@ contract Task4 with Deployable {
       self.reply("NFT is still locked".asComment());
     }else{
       self.owning_nft = false;
-      send(SendParameters{
-        to: msg.nftAddress,
-        value: 0,
-        mode: SendRemainingValue + SendIgnoreErrors,
-        body: Transfer{
-          queryId: 1,
-          newOwner: self.prevOwner,
-          responseDestination: myAddress(),
-          customPayload: null,
-          forwardAmount: ton("0.01"),
-          forwardPayload: emptySlice()
-        }.toCell()
-      });
+      // send(SendParameters{
+      //   to: msg.nftAddress,
+      //   value: 0,
+      //   mode: SendRemainingValue + SendIgnoreErrors,
+      //   body: Transfer{
+      //     queryId: 0,
+      //     newOwner: self.prevOwner,
+      //     responseDestination: myAddress(),
+      //     customPayload: null,
+      //     forwardAmount: ton("0.01"),
+      //     forwardPayload: emptySlice()
+      //   }.toCell()
+      // });
     }
   }
 
