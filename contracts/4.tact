@@ -61,14 +61,27 @@ contract Task4 with Deployable {
 
   receive(msg: OwnershipAssigned) {
     if(self.owning_nft){
-      self.reply(Transfer{
-        queryId:0,
-        newOwner: msg.prevOwner,
-        responseDestination: myAddress(),
-        customPayload: null,
-        forwardAmount: myBalance(),
-        forwardPayload: emptySlice()
-      }.toCell());
+      send(SendParameters{
+        to: sender(),
+        value: 0,
+        mode: SendRemainingBalance + SendIgnoreErrors,
+        body: Transfer{
+          queryId: 0,
+          newOwner: msg.prevOwner,
+          responseDestination: myAddress(),
+          customPayload: null,
+          forwardAmount: myBalance(),
+          forwardPayload: emptySlice()
+        }.toCell()
+      });
+      // self.reply(Transfer{
+      //   queryId:0,
+      //   newOwner: msg.prevOwner,
+      //   responseDestination: myAddress(),
+      //   customPayload: null,
+      //   forwardAmount: myBalance(),
+      //   forwardPayload: emptySlice()
+      // }.toCell());
     }else{
       self.owning_nft = true;
       self.nft_address = sender();
