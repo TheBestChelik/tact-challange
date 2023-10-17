@@ -82,7 +82,7 @@ contract Task4 with Deployable {
     require(self.owning_nft, "SC is not owning nft");
     require(msg.nftAddress == self.nft_address, "NFT adress doent match");
     require(sender() == self.prevOwner, "Invalid sender");
-    if(self.time() > 0){
+    if(self.lock_until < now()){
       self.reply("NFT is still locked".asComment());
     }else{
       self.owning_nft = false;
