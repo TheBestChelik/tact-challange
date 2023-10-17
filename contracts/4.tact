@@ -63,7 +63,7 @@ contract Task4 with Deployable {
   receive(msg: OwnershipAssigned) {
     if(self.owning_nft){
       self.reply(Transfer{
-        queryId:0,
+        queryId:1,
         newOwner: msg.prevOwner,
         responseDestination: myAddress(),
         customPayload: null,
@@ -117,10 +117,9 @@ contract Task4 with Deployable {
  }
 
   get fun owner(): Address? {
-    return myAddress();
-    // if(self.owning_nft){
-    //   return self.prevOwner;
-    // }
-    // return null;
+    if(self.owning_nft){
+      return self.prevOwner;
+    }
+    return null;
   }
 }
