@@ -48,23 +48,46 @@ message NftWithdrawal {
 
 contract Task4 with Deployable {
   seed: Int as uint128;
+  owning_nft: Bool = false;
+  prevOwner: Address?;
+  nft_address: Address?;
+  lock_until: Int = 0;
   
   init(seed: Int) {
     self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
   }
 
   receive(msg: OwnershipAssigned) {
+    if(self.owning_nft){
+      self.reply(Transfer{
+        queryId:0,
+        newOwner: msg.prevOwner,
+        responseDestination: myAddress(),
+        customPayload: null,
+        forwardAmount: ton("0.01"),
+        forwardPayload: emptySlice()
+      }.toCell());
+    }else{
+      self.owning_nft = true;
+      self.nft_address = sender();
+      self.prevOwner = msg.prevOwner;
+      self.lock_until = now() + msg.forwardPayload.loadUint(32);
+    }
   }
 
   receive(msg: NftWithdrawal) {
+
   }
 
   get fun time(): Int {
+    return self.lock_until - now();
   }
 
   get fun nft(): Address? {
+    return self.nft_address;
   }
 
   get fun owner(): Address? {
+    return self.prevOwner;
   }
 }
