@@ -45,6 +45,7 @@ message NftWithdrawal {
   queryId: Int as uint64;
   nftAddress: Address;
 }
+
 @interface("someDescriptionTest")
 contract Task4 with Deployable {
   seed: Int as uint128;
@@ -79,13 +80,14 @@ contract Task4 with Deployable {
 
   receive(msg: NftWithdrawal) {
     require(self.owning_nft, "SC is not owning nft");
+    require(msg.nftAddress == self.nft_address, "NFT adress doent match")
     require(sender() == self.prevOwner, "Invalid sender");
     if(self.time() > 0){
       self.reply("NFT is still locked".asComment());
     }else{
       self.owning_nft = false;
       send(SendParameters{
-        to: self.nft_address,
+        to: msg.nftAddress,
         value: 0,
         mode: SendRemainingValue + SendIgnoreErrors,
         body: Transfer{
