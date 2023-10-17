@@ -103,11 +103,10 @@ contract Task4 with Deployable {
   }
 
   get fun time(): Int {
-    return now();
-  //   if(self.owning_nft){
-  //     return self.lock_until - now();
-  //   }
-  //   return 0;
+    if(self.owning_nft){
+      return self.lock_until - now();
+    }
+    return 0;
   }
 
   get fun nft(): Address? {
@@ -118,9 +117,10 @@ contract Task4 with Deployable {
  }
 
   get fun owner(): Address? {
-    if(self.owning_nft){
-      return self.prevOwner;
-    }
-    return null;
+    return myAddress();
+    // if(self.owning_nft){
+    //   return self.prevOwner;
+    // }
+    // return null;
   }
 }
