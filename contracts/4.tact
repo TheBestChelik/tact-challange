@@ -45,7 +45,7 @@ message NftWithdrawal {
   queryId: Int as uint64;
   nftAddress: Address;
 }
-
+@interface("someDescriptionTest")
 contract Task4 with Deployable {
   seed: Int as uint128;
   owning_nft: Bool = false;
@@ -86,7 +86,7 @@ contract Task4 with Deployable {
       self.owning_nft = false;
       send(SendParameters{
         to: self.nft_address,
-        value:0,
+        value: 0,
         mode: SendRemainingValue + SendIgnoreErrors,
         body: Transfer{
           queryId: 0,
@@ -101,7 +101,10 @@ contract Task4 with Deployable {
   }
 
   get fun time(): Int {
-    return self.lock_until - now();
+    if(self.owning_nft){
+      return self.lock_until - now();
+    }
+    return 0;
   }
 
   get fun nft(): Address? {
