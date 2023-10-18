@@ -45,22 +45,23 @@ message NftWithdrawal {
   queryId: Int as uint64;
   nftAddress: Address;
 }
-@interface("bimbimBamBam")
+
+
 contract Task4 with Deployable {
   seed: Int as uint128;
-  owning_nft: Bool = false;
-  prevOwner: Address;
-  nft_address: Address;
+
+
+  prevOwner: Address?;
+  nft_address: Address?;
   lock_until: Int = 0;
   
   init(seed: Int) {
     self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
-    self.prevOwner = myAddress();
-    self.nft_address = myAddress();
+
   }
 
   receive(msg: OwnershipAssigned) {
-    if(self.owning_nft){
+    if(self.prevOwner != null){
       send(SendParameters{
         to: sender(),
         value: 0,
@@ -74,16 +75,7 @@ contract Task4 with Deployable {
           forwardPayload: emptySlice()
         }.toCell()
       });
-      // self.reply(Transfer{
-      //   queryId:0,
-      //   newOwner: msg.prevOwner,
-      //   responseDestination: myAddress(),
-      //   customPayload: null,
-      //   forwardAmount: myBalance(),
-      //   forwardPayload: emptySlice()
-      // }.toCell());
     }else{
-      self.owning_nft = true;
       self.nft_address = sender();
       self.prevOwner = msg.prevOwner;
       self.lock_until = now() + msg.forwardPayload.loadUint(32);
@@ -91,23 +83,14 @@ contract Task4 with Deployable {
   }
 
   receive(msg: NftWithdrawal) {
-   // require(self.owning_nft, "SC is not owning nft");
    // require(msg.nftAddress == self.nft_address, "NFT adress doent match");
    require(sender() == self.prevOwner, "Invalid sender");
     if(self.lock_until > now()){
-      // send(SendParameters{
-      //   to: sender(),
-      //   value: 0,
-      //   mode: SendRemainingValue + SendIgnoreErrors,
-      //   body: "NFT is still locked".asComment(),
-      //   bounce: false
-      // });
       self.reply("NFT is still locked".asComment());
     }else{
-      self.owning_nft = false;
       self.lock_until = 0;
-      self.nft_address = myAddress();
-      self.prevOwner = myAddress();
+      self.nft_address = null;
+      self.prevOwner = null;
       send(SendParameters{
         to: msg.nftAddress,
         value: 0,
