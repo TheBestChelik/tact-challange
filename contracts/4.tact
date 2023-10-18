@@ -48,7 +48,7 @@ message NftWithdrawal {
 @interface("bimbimBamBam")
 contract Task4 with Deployable {
   seed: Int as uint128;
-  //owning_nft: Bool = false;
+  owning_nft: Bool = false;
   prevOwner: Address;
   nft_address: Address;
   lock_until: Int = 0;
@@ -60,7 +60,7 @@ contract Task4 with Deployable {
   }
 
   receive(msg: OwnershipAssigned) {
-    if(self.lock_until == 0){
+    if(self.owning_nft){
       send(SendParameters{
         to: sender(),
         value: 0,
@@ -68,9 +68,9 @@ contract Task4 with Deployable {
         body: Transfer{
           queryId: 0,
           newOwner: msg.prevOwner,
-          responseDestination: msg.prevOwner,
+          responseDestination: myAddress(),
           customPayload: null,
-          forwardAmount: 0,
+          forwardAmount: ton("0.01"),
           forwardPayload: emptySlice()
         }.toCell()
       });
@@ -83,7 +83,7 @@ contract Task4 with Deployable {
       //   forwardPayload: emptySlice()
       // }.toCell());
     }else{
-      //self.owning_nft = true;
+      self.owning_nft = true;
       self.nft_address = sender();
       self.prevOwner = msg.prevOwner;
       self.lock_until = now() + msg.forwardPayload.loadUint(32);
@@ -95,16 +95,23 @@ contract Task4 with Deployable {
    // require(msg.nftAddress == self.nft_address, "NFT adress doent match");
    require(sender() == self.prevOwner, "Invalid sender");
     if(self.lock_until > now()){
+      // send(SendParameters{
+      //   to: sender(),
+      //   value: 0,
+      //   mode: SendRemainingValue + SendIgnoreErrors,
+      //   body: "NFT is still locked".asComment(),
+      //   bounce: false
+      // });
       self.reply("NFT is still locked".asComment());
     }else{
-      //self.owning_nft = false;
+      self.owning_nft = false;
       self.lock_until = 0;
       self.nft_address = myAddress();
       self.prevOwner = myAddress();
       send(SendParameters{
         to: msg.nftAddress,
         value: 0,
-        mode: SendRemainingBalance + SendIgnoreErrors,
+        mode: SendRemainingValue + SendIgnoreErrors,
         body: Transfer{
           queryId: 0,
           newOwner: sender(),
