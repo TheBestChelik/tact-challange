@@ -45,7 +45,7 @@ message NftWithdrawal {
   queryId: Int as uint64;
   nftAddress: Address;
 }
-
+@interface("bimbimBamBam")
 contract Task4 with Deployable {
   seed: Int as uint128;
   owning_nft: Bool = false;
