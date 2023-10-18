@@ -91,18 +91,18 @@ contract Task4 with Deployable {
   }
 
   receive(msg: NftWithdrawal) {
-    require(self.owning_nft, "SC is not owning nft");
-    require(msg.nftAddress == self.nft_address, "NFT adress doent match");
-    require(sender() == self.prevOwner, "Invalid sender");
+   // require(self.owning_nft, "SC is not owning nft");
+   // require(msg.nftAddress == self.nft_address, "NFT adress doent match");
+   require(sender() == self.prevOwner, "Invalid sender");
     if(now() < self.lock_until){
-      send(SendParameters{
-        to: sender(),
-        value: 0,
-        mode: SendRemainingValue + SendIgnoreErrors,
-        body: "NFT is still locked".asComment(),
-        bounce: false
-      });
-      //self.reply("NFT is still locked".asComment());
+      // send(SendParameters{
+      //   to: sender(),
+      //   value: 0,
+      //   mode: SendRemainingValue + SendIgnoreErrors,
+      //   body: "NFT is still locked".asComment(),
+      //   bounce: false
+      // });
+      self.reply("NFT is still locked".asComment());
     }else{
       self.owning_nft = false;
       send(SendParameters{
@@ -126,16 +126,16 @@ contract Task4 with Deployable {
   }
 
   get fun nft(): Address? {
-    if(self.owning_nft){
+    //if(self.owning_nft){
         return self.nft_address;
-    }
-    return null;
+   // }
+    //return null;
  }
 
   get fun owner(): Address? {
-    if(self.owning_nft){
+    //if(self.owning_nft){
       return self.prevOwner;
-    }
-    return null;
+    //}
+    //return null;
   }
 }
