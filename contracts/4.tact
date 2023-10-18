@@ -108,13 +108,13 @@ contract Task4 with Deployable {
       send(SendParameters{
         to: msg.nftAddress,
         value: 0,
-        mode: SendRemainingBalance + SendRemainingValue + SendIgnoreErrors,
+        mode: SendRemainingValue + SendIgnoreErrors,
         body: Transfer{
           queryId: 0,
           newOwner: sender(),
           responseDestination: myAddress(),
           customPayload: null,
-          forwardAmount: myBalance(),
+          forwardAmount: context().value,
           forwardPayload: emptySlice()
         }.toCell()
       });
@@ -122,10 +122,7 @@ contract Task4 with Deployable {
   }
 
   get fun time(): Int {
-    if(self.owning_nft){
-      return self.lock_until - now();
-    }
-    return 0;
+    return self.lock_until - now();
   }
 
   get fun nft(): Address? {
