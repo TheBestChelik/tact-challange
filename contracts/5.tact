@@ -165,7 +165,7 @@ contract Task5 with Deployable {
       send(SendParameters{
         to: self.nft_map.get(curr_id)!!,
         value: ton("0.06"),
-        mode: SendIgnoreErrors,
+        mode: 0,
         body: Transfer{
           queryId: msg.queryId,
           newOwner: self.owner,
