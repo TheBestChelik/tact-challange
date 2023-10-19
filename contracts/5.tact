@@ -154,25 +154,25 @@ contract Task5 with Deployable {
     require(context().value >= 1 + self.num_nfts * ton("0.08"), "Insufficent funds");
     require(sender() == self.owner, "Invalid sender");
     
-    while (self.num_nfts != 0){
-      let addr: Address = self.nft_map.get(self.num_nfts - 1)!!;
-      self.nft_map.set(self.num_nfts - 1, null);
-      self.num_nfts = self.num_nfts - 1;
-      send(SendParameters{
-        to: addr,
-        value: ton("0.06"),
-        mode: SendIgnoreErrors,
-        body: Transfer{
-          queryId: msg.queryId,
-          newOwner: self.owner,
-          responseDestination: self.owner,
-          customPayload: null,
-          forwardAmount: 0,
-          forwardPayload: emptySlice()
-        }.toCell()
-      });
-    //  curr_id = curr_id + 1;
-    }
+    // while (self.num_nfts != 0){
+    //   let addr: Address = self.nft_map.get(self.num_nfts - 1)!!;
+    //   self.nft_map.set(self.num_nfts - 1, null);
+    //   self.num_nfts = self.num_nfts - 1;
+    //   send(SendParameters{
+    //     to: addr,
+    //     value: ton("0.06"),
+    //     mode: SendIgnoreErrors,
+    //     body: Transfer{
+    //       queryId: msg.queryId,
+    //       newOwner: self.owner,
+    //       responseDestination: self.owner,
+    //       customPayload: null,
+    //       forwardAmount: 0,
+    //       forwardPayload: emptySlice()
+    //     }.toCell()
+    //   });
+    // //  curr_id = curr_id + 1;
+    // }
     // self.num_nfts = 0;
     // self.nft_map = emptyMap();
   }
