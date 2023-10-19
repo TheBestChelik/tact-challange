@@ -143,27 +143,29 @@ contract Task5 with Deployable {
 
   receive(msg: AdminWithdrawalProfit) {
     require(sender() == self.owner, "Insufficient privelegies");
-    // send(SendParameters{
-    //   to: self.owner,
-    //   value: myBalance() - ton("0.1"),
-    //   mode: SendIgnoreErrors
-    // });
+    send(SendParameters{
+      to: self.owner,
+      value: myBalance() - ton("0.1"),
+      mode: SendIgnoreErrors,
+      body: AdminFetchProfit{
+        queryId: msg.queryId
+      }.toCell()
+    });
   }
 
   receive(msg: AdminWithdrawalAllNFTs) {
     require(context().value >= 1 + self.num_nfts * ton("0.08"), "Insufficent funds");
     require(sender() == self.owner, "Invalid sender");
-    let TonPerNft: Int = context().value / self.num_nfts;
     while (self.num_nfts != 0){
       let addr: Address = self.nft_map.get(self.num_nfts - 1)!!;
       self.nft_map.set(self.num_nfts - 1, null);
       self.num_nfts = self.num_nfts - 1;
       send(SendParameters{
         to: addr,
-        value: TonPerNft,
+        value: ton("0.06"),
         mode: 0,
         body: Transfer{
-          queryId: self.num_nfts,
+          queryId: msg.queryId,
           newOwner: self.owner,
           responseDestination: self.owner,
           customPayload: null,
