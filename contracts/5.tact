@@ -37,7 +37,7 @@ import "@stdlib/deploy";
      the order of NFTs in this dictionary doesn't matter
 */
 
-message AdminWithdrawalFees {
+message AdminWithdrawalProfit {
   queryId: Int as uint64;
 }
 
@@ -45,7 +45,7 @@ message AdminWithdrawalAllNFTs {
   queryId: Int as uint64;
 }
 
-message AdminFetchFees {
+message AdminFetchProfit {
   queryId: Int as uint64;
 }
 
@@ -72,113 +72,107 @@ contract Task5 with Deployable {
   
   init(seed: Int, owner: Address) {
     self.owner = owner;
-    self.seed = seed;
     self.nft_map = emptyMap();
+    self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
   }
 
   receive(msg: OwnershipAssigned) {
+    if(msg.prevOwner == self.owner){
 
-    // if(msg.prevOwner == self.owner){
-
-    //   self.nft_map.set(self.num_nfts, sender());
-    //   self.num_nfts = self.num_nfts + 1;
+      self.nft_map.set(self.num_nfts, sender());
+      self.num_nfts = self.num_nfts + 1;
     
-    // }else{
+    }else{
+      if(context().value < ton("2.1")){
+        //sending nft back to prevOwner
+        send(SendParameters{
+            to: sender(),
+            value: 0,
+            mode: SendRemainingValue + SendIgnoreErrors,
+            body: Transfer{
+              queryId: msg.queryId,
+              newOwner: msg.prevOwner,
+              responseDestination: msg.prevOwner,
+              customPayload: null,
+              forwardAmount: 0,
+              forwardPayload: emptySlice()
+            }.toCell()
+        });
+        
+      }else{
+        let rnd_id: Int = random(0, self.num_nfts);
+        if(rnd_id == self.num_nfts){
+          //send users nft back to him
+          send(SendParameters{
+            to: sender(),
+            value: ton("0.06"),
+            mode: SendIgnoreErrors,
+            body: Transfer{
+              queryId: 0,
+              newOwner: msg.prevOwner,
+              responseDestination: msg.prevOwner,
+              customPayload: null,
+              forwardAmount: 0,
+              forwardPayload: emptySlice()
+            }.toCell()
+          });
+        }else{
 
-      
-
-    //   // if(context().value < ton("2.1")){
-    //   //   require(context().value > ton("0.1"), "Too small value");
-    //   //   send(SendParameters{
-    //   //       to: sender(),
-    //   //       value: 0,
-    //   //       mode: SendIgnoreErrors,
-    //   //       body: Transfer{
-    //   //         queryId: 0,
-    //   //         newOwner: msg.prevOwner,
-    //   //         responseDestination: msg.prevOwner,
-    //   //         customPayload: null,
-    //   //         forwardAmount: 0,
-    //   //         forwardPayload: emptySlice()
-    //   //       }.toCell()
-    //   //   });
-    //   //   //sending nft back to prevOwner
-    //   // }else{
-    //   //   let rnd_id: Int = random(0, self.num_nfts);
-    //   //   if(rnd_id == self.num_nfts){
-    //   //     //send users nft back to him
-    //   //     send(SendParameters{
-    //   //       to: sender(),
-    //   //       value: 0,
-    //   //       mode: SendIgnoreErrors,
-    //   //       body: Transfer{
-    //   //         queryId: 0,
-    //   //         newOwner: msg.prevOwner,
-    //   //         responseDestination: msg.prevOwner,
-    //   //         customPayload: null,
-    //   //         forwardAmount: 0,
-    //   //         forwardPayload: emptySlice()
-    //   //       }.toCell()
-    //   //   });
-    //   //   }else{
-
-    //   //     let nft_to_send: Address = self.nft_map.get(rnd_id)!!;
+          let nft_to_send: Address = self.nft_map.get(rnd_id)!!;
           
-    //   //     // replacing sened nft with new users nft
-    //   //     self.nft_map.set(rnd_id, sender());
-    //   //     //sending won nft
-    //   //     send(SendParameters{
-    //   //       to: nft_to_send,
-    //   //       value: 0,
-    //   //       mode: SendIgnoreErrors,
-    //   //       body: Transfer{
-    //   //         queryId: 0,
-    //   //         newOwner: msg.prevOwner,
-    //   //         responseDestination: msg.prevOwner,
-    //   //         customPayload: null,
-    //   //         forwardAmount: 0,
-    //   //         forwardPayload: emptySlice()
-    //   //       }.toCell()
-    //   //     });
-    //   //   }
-    //   // }
-    // }
-
+          // replacing sened nft with new users nft
+          self.nft_map.set(rnd_id, sender());
+          //sending won nft
+          send(SendParameters{
+            to: nft_to_send,
+            value: ton("0.06"),
+            mode: SendIgnoreErrors,
+            body: Transfer{
+              queryId: 0,
+              newOwner: msg.prevOwner,
+              responseDestination: msg.prevOwner,
+              customPayload: null,
+              forwardAmount: 0,
+              forwardPayload: emptySlice()
+            }.toCell()
+          });
+        }
+      }
+    }
   }
 
-  receive(msg: AdminWithdrawalFees) {
+  receive(msg: AdminWithdrawalProfit) {
     require(sender() == self.owner, "Insufficient privelegies");
-    // send(SendParameters{
-    //   to: self.owner,
-    //   value: myBalance() - ton("0.1"),
-    //   mode: SendIgnoreErrors
-    // });
+    send(SendParameters{
+      to: self.owner,
+      value: myBalance() - ton("0.1"),
+      mode: SendIgnoreErrors
+    });
   }
 
   receive(msg: AdminWithdrawalAllNFTs) {
     require(context().value >= 1 + self.num_nfts * ton("0.08"), "Insufficent funds");
     require(sender() == self.owner, "Invalid sender");
-    //let curr_id: Int = 0;
-    // repeat (self.num_nfts){
-    //   send(SendParameters{
-    //     to: self.nft_map.get(curr_id)!!,
-    //     value: 0,
-    //     mode: SendIgnoreErrors,
-    //     body: Transfer{
-    //       queryId: 0,
-    //       newOwner: self.owner,
-    //       responseDestination: self.owner,
-    //       customPayload: null,
-    //       forwardAmount: 0,
-    //       forwardPayload: emptySlice()
-    //     }.toCell()
-    //   });
-    //   curr_id = curr_id + 1;
-    // }
-
+    let curr_id: Int = 0;
+    repeat (self.num_nfts){
+      send(SendParameters{
+        to: self.nft_map.get(curr_id)!!,
+        value: ton("0.06"),
+        mode: SendIgnoreErrors,
+        body: Transfer{
+          queryId: 0,
+          newOwner: self.owner,
+          responseDestination: self.owner,
+          customPayload: null,
+          forwardAmount: 0,
+          forwardPayload: emptySlice()
+        }.toCell()
+      });
+      curr_id = curr_id + 1;
+    }
   }
 
-  get fun fees(): Int { 
+  get fun profit(): Int { 
     return myBalance() - ton("0.1");
   }
   
