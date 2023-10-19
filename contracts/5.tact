@@ -170,6 +170,8 @@ contract Task5 with Deployable {
       });
       curr_id = curr_id + 1;
     }
+    self.num_nfts = 0;
+    self.nft_map = emptyMap();
   }
 
   get fun profit(): Int { 
