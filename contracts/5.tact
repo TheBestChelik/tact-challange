@@ -87,61 +87,61 @@ contract Task5 with Deployable {
 
       
 
-      if(context().value < ton("2.1")){
-        require(context().value > ton("0.1"), "Too small value");
-        send(SendParameters{
-            to: sender(),
-            value: 0,
-            mode: SendIgnoreErrors,
-            body: Transfer{
-              queryId: 0,
-              newOwner: msg.prevOwner,
-              responseDestination: msg.prevOwner,
-              customPayload: null,
-              forwardAmount: 0,
-              forwardPayload: emptySlice()
-            }.toCell()
-        });
-        //sending nft back to prevOwner
-      }else{
-        let rnd_id: Int = random(0, self.num_nfts);
-        if(rnd_id == self.num_nfts){
-          //send users nft back to him
-          send(SendParameters{
-            to: sender(),
-            value: 0,
-            mode: SendIgnoreErrors,
-            body: Transfer{
-              queryId: 0,
-              newOwner: msg.prevOwner,
-              responseDestination: msg.prevOwner,
-              customPayload: null,
-              forwardAmount: 0,
-              forwardPayload: emptySlice()
-            }.toCell()
-        });
-        }else{
+      // if(context().value < ton("2.1")){
+      //   require(context().value > ton("0.1"), "Too small value");
+      //   send(SendParameters{
+      //       to: sender(),
+      //       value: 0,
+      //       mode: SendIgnoreErrors,
+      //       body: Transfer{
+      //         queryId: 0,
+      //         newOwner: msg.prevOwner,
+      //         responseDestination: msg.prevOwner,
+      //         customPayload: null,
+      //         forwardAmount: 0,
+      //         forwardPayload: emptySlice()
+      //       }.toCell()
+      //   });
+      //   //sending nft back to prevOwner
+      // }else{
+      //   let rnd_id: Int = random(0, self.num_nfts);
+      //   if(rnd_id == self.num_nfts){
+      //     //send users nft back to him
+      //     send(SendParameters{
+      //       to: sender(),
+      //       value: 0,
+      //       mode: SendIgnoreErrors,
+      //       body: Transfer{
+      //         queryId: 0,
+      //         newOwner: msg.prevOwner,
+      //         responseDestination: msg.prevOwner,
+      //         customPayload: null,
+      //         forwardAmount: 0,
+      //         forwardPayload: emptySlice()
+      //       }.toCell()
+      //   });
+      //   }else{
 
-          let nft_to_send: Address = self.nft_map.get(rnd_id)!!;
+      //     let nft_to_send: Address = self.nft_map.get(rnd_id)!!;
           
-          // replacing sened nft with new users nft
-          self.nft_map.set(rnd_id, sender());
-          //sending won nft
-          send(SendParameters{
-            to: nft_to_send,
-            value: 0,
-            mode: SendIgnoreErrors,
-            body: Transfer{
-              queryId: 0,
-              newOwner: msg.prevOwner,
-              responseDestination: msg.prevOwner,
-              customPayload: null,
-              forwardAmount: 0,
-              forwardPayload: emptySlice()
-            }.toCell()
-          });
-        }
-      }
+      //     // replacing sened nft with new users nft
+      //     self.nft_map.set(rnd_id, sender());
+      //     //sending won nft
+      //     send(SendParameters{
+      //       to: nft_to_send,
+      //       value: 0,
+      //       mode: SendIgnoreErrors,
+      //       body: Transfer{
+      //         queryId: 0,
+      //         newOwner: msg.prevOwner,
+      //         responseDestination: msg.prevOwner,
+      //         customPayload: null,
+      //         forwardAmount: 0,
+      //         forwardPayload: emptySlice()
+      //       }.toCell()
+      //     });
+      //   }
+      // }
     }
 
   }
@@ -151,7 +151,7 @@ contract Task5 with Deployable {
     send(SendParameters{
       to: self.owner,
       value: myBalance() - ton("0.1"),
-      mode: SendRemainingValue + SendIgnoreErrors
+      mode: SendIgnoreErrors
     });
   }
 
