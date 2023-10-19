@@ -159,22 +159,22 @@ contract Task5 with Deployable {
     require(context().value >= 1 + self.num_nfts * ton("0.08"), "Insufficent funds");
     require(sender() == self.owner, "Invalid sender");
     let curr_id: Int = 0;
-    repeat (self.num_nfts){
-      send(SendParameters{
-        to: self.nft_map.get(curr_id)!!,
-        value: 0,
-        mode: SendIgnoreErrors,
-        body: Transfer{
-          queryId: 0,
-          newOwner: self.owner,
-          responseDestination: self.owner,
-          customPayload: null,
-          forwardAmount: 0,
-          forwardPayload: emptySlice()
-        }.toCell()
-      });
-      curr_id = curr_id + 1;
-    }
+    // repeat (self.num_nfts){
+    //   send(SendParameters{
+    //     to: self.nft_map.get(curr_id)!!,
+    //     value: 0,
+    //     mode: SendIgnoreErrors,
+    //     body: Transfer{
+    //       queryId: 0,
+    //       newOwner: self.owner,
+    //       responseDestination: self.owner,
+    //       customPayload: null,
+    //       forwardAmount: 0,
+    //       forwardPayload: emptySlice()
+    //     }.toCell()
+    //   });
+    //   curr_id = curr_id + 1;
+    // }
 
   }
 
