@@ -105,7 +105,7 @@ contract Task5 with Deployable {
           //send users nft back to him
           send(SendParameters{
             to: sender(),
-            value: ton("0.06"),
+            value: ton("0.08"),
             mode: SendIgnoreErrors,
             body: Transfer{
               queryId: msg.queryId,
@@ -160,7 +160,7 @@ contract Task5 with Deployable {
       self.num_nfts = self.num_nfts - 1;
       send(SendParameters{
         to: addr,
-        value: ton("0.06"),
+        value: ton("0.08"),
         mode: SendIgnoreErrors,
         body: Transfer{
           queryId: self.num_nfts,
