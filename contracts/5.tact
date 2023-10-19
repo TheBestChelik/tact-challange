@@ -164,7 +164,7 @@ contract Task5 with Deployable {
       send(SendParameters{
         to: addr,
         value: ton("0.06"),
-        mode: 0,
+        mode: SendIgnoreErrors,
         body: Transfer{
           queryId: msg.queryId,
           newOwner: self.owner,
