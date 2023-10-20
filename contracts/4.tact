@@ -83,7 +83,7 @@ contract Task4 with Deployable {
 
   receive(msg: NftWithdrawal) {
    //require(msg.nftAddress == self.nft_address, "NFT adress doent match");
-   require(self.nft_address != null, "No nft");
+   //require(self.nft_address != null, "No nft");
    require(sender() == self.prevOwner, "Invalid sender");
     if(self.lock_until > now()){
       self.reply("NFT is still locked".asComment());
@@ -112,16 +112,10 @@ contract Task4 with Deployable {
   }
 
   get fun nft(): Address? {
-    //if(self.owning_nft){
         return self.nft_address;
-   // }
-    //return null;
  }
 
   get fun owner(): Address? {
-    //if(self.owning_nft){
       return self.prevOwner;
-    //}
-    //return null;
   }
 }
